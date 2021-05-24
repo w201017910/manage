@@ -2,6 +2,9 @@
 var express = require('express');
 var router = express.Router();
 var mysql=require("mysql")
+var multer = require('multer');
+var fs = require('fs');
+var upload = multer({ dest: 'excel/' });
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -16,6 +19,9 @@ var mysqlword=
 "on student.testId=score.testId INNER JOIN class on class.className=student.class INNER JOIN layer "+
 "on layer.grade=class.grade";
 /* GET home page. */
+router.post('/upload', upload.single('1'), function(req, res, next){
+  console.log(req.files);
+});
 router.get('/', function(req, res, next) {
   res.render('login');
 });

@@ -16,7 +16,7 @@ app.set('view engine', 'ejs');
 app.use(session({
   name:"cookie_name",
   secret:"test ket",
-  cookie:{maxAge:120000},
+  cookie:{maxAge:1200000},
   resave:false,
   saveUninitialized:true
 }))
