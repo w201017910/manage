@@ -29,7 +29,7 @@ router.get('/form_advanced', function(req, res, next) {
   if(req.session.username!=undefined){
     connection.query("SELECT className from class",function(err,data){
       if(err){console.log(err)}else{
-        res.render('form_advanced',{data:data})
+        res.render('form_advanced',{data:data,username:req.session.username})
       }
     })
   }else{
@@ -38,13 +38,13 @@ router.get('/form_advanced', function(req, res, next) {
   
 });
 router.get('/form_upload', function(req, res, next) {
-  if(req.session.username!=undefined){res.render('form_upload');}else{
+  if(req.session.username!=undefined){res.render('form_upload',{username:req.session.username});}else{
     res.redirect("/")
   }
   
 });
 router.get('/form_validation', function(req, res, next) {
-  if(req.session.username!=undefined){res.render('form_validation');}else{
+  if(req.session.username!=undefined){res.render('form_validation',{username:req.session.username});}else{
     res.redirect("/")
   }
   
@@ -53,7 +53,7 @@ router.get('/form_wizards', function(req, res, next) {
   if(req.session.username!=undefined){
     connection.query("select * from layer",function(err,data){
     if(err){console.log(err)}else{
-      res.render("form_wizards",{data:data})
+      res.render("form_wizards",{data:data,username:req.session.username})
     }
   })}else{
     res.redirect("/")
@@ -64,7 +64,7 @@ router.get('/form', function(req, res, next) {
   if(req.session.username!=undefined){
     connection.query("select grade from layer",function(err,data){
     if(err){console.log(err)}else{
-      res.render("form",{data:data})
+      res.render("form",{data:data,username:req.session.username})
     }
   })}else{
     res.redirect("/")
@@ -75,7 +75,7 @@ router.get("/tables_remake",function(req,res,next){
   if(req.session.username!=undefined){
     connection.query("select * from course;select exam from exam",function(err,data){
       if(err){console.log(err)}else{
-        res.render('tables_remake',{data:data})
+        res.render('tables_remake',{data:data,username:req.session.username})
       }
     })
   }else{
@@ -87,7 +87,7 @@ router.get('/tables_dynamic', function(req, res, next) {
   if(req.session.username!=undefined){
     connection.query(mysqlword,function(err,data){
       if(err){console.log(err)}else{
-        res.render('tables_dynamic',{data:data})
+        res.render('tables_dynamic',{data:data,username:req.session.username})
       }
     })
   }else{
@@ -100,7 +100,7 @@ router.get('/tables', function(req, res, next) {
   if(req.session.username!=undefined){
     connection.query("SELECT class.className,student.sname,student.testId FROM class INNER JOIN student ON class.className=student.class;SELECT courseName FROM course;SELECT exam FROM exam",function(err,data){
       if(err){console.log(err)}else{
-        res.render('tables',{data:data})
+        res.render('tables',{data:data,username:req.session.username})
       }
     })
   }else{
@@ -113,8 +113,8 @@ router.get("/student",function(req,res,next){
     connection.query("INSERT into student(sname,studentId,sex,class,testId)VALUES(?,?,?,?,?)",
   [req.query.name,req.query.studentId,req.query.sex,req.query.class,req.query.testId],(err,data)=>{
     if(err){
-      res.render("ress",{title:["添加学生","添加学生","学生信息","添加失败"]})}else{
-      res.render("ress",{title:["添加学生","添加学生","学生信息","添加成功"]})
+      res.render("ress",{title:["添加学生","添加学生","学生信息","添加失败"],username:req.session.username})}else{
+      res.render("ress",{title:["添加学生","添加学生","学生信息","添加成功"],username:req.session.username})
     }
   })
   }else{
@@ -128,8 +128,8 @@ router.post("/user",(req,res,next)=>{
     connection.query("INSERT into user(username,email,telephone,registertime,password)VALUES(?,?,?,?,?)",
   [req.body.name,req.body.email,req.body.phone,req.body.date,req.body.password],(err,data)=>{
     if(err){
-      res.render("ress",{title:["教师注册","添加教师","教师信息","注册失败"]})}else{
-      res.render("ress",{title:["教师注册","添加教师","教师信息","注册成功"]})
+      res.render("ress",{title:["教师注册","添加教师","教师信息","注册失败"],username:req.session.username})}else{
+      res.render("ress",{title:["教师注册","添加教师","教师信息","注册成功"],username:req.session.username})
     }
   })
   }else{
@@ -142,8 +142,8 @@ router.get("/layer",(req,res,next)=>{
     connection.query("INSERT into layer(grade)VALUES(?)",
   [req.query.layer],(err,data)=>{
     if(err){
-      res.render("ress",{title:["添加年级","添加年级","年级信息","添加失败"]})}else{
-      res.render("ress",{title:["添加年级","添加年级","年级信息","添加成功"]})
+      res.render("ress",{title:["添加年级","添加年级","年级信息","添加失败"],username:req.session.username})}else{
+      res.render("ress",{title:["添加年级","添加年级","年级信息","添加成功"],username:req.session.username})
     }
   })
   }else{
@@ -156,8 +156,8 @@ router.get("/class",(req,res,next)=>{
     connection.query("INSERT into class(className,number,grade)VALUES(?,?,?)",
   [req.query.classname,req.query.classnumber,req.query.grade],(err,data)=>{
     if(err){
-      res.render("ress",{title:["添加班级","添加班级","班级信息","添加失败"]})}else{
-      res.render("ress",{title:["添加班级","添加班级","班级信息","添加成功"]})
+      res.render("ress",{title:["添加班级","添加班级","班级信息","添加失败"],username:req.session.username})}else{
+      res.render("ress",{title:["添加班级","添加班级","班级信息","添加成功"],username:req.session.username})
     }
   })
   }else{
@@ -170,8 +170,8 @@ router.get("/course",(req,res,next)=>{
     connection.query("INSERT into course(courseName)VALUES(?)",
   [req.query.course],(err,data)=>{
     if(err){
-      res.render("ress",{title:["添加课程","添加课程","课程信息","添加失败"]})}else{
-      res.render("ress",{title:["添加课程","添加课程","课程信息","添加成功"]})
+      res.render("ress",{title:["添加课程","添加课程","课程信息","添加失败"],username:req.session.username})}else{
+      res.render("ress",{title:["添加课程","添加课程","课程信息","添加成功"],username:req.session.username})
     }
   })
   }else{
@@ -202,8 +202,8 @@ for(var i=0;i<p.length;i++){
    if(err){e=true}
   })
 }
-if(e){res.render("ress",{title:["添加成绩","添加成绩","成绩信息","添加失败"]})}else{
-  res.render("ress",{title:["添加成绩","添加成绩","成绩信息","添加成功"]})
+if(e){res.render("ress",{title:["添加成绩","添加成绩","成绩信息","添加失败"],username:req.session.username})}else{
+  res.render("ress",{title:["添加成绩","添加成绩","成绩信息","添加成功"],username:req.session.username})
 }
   }else{res.redirect("/")}
   
@@ -218,8 +218,8 @@ router.get("/makeup",(req,res)=>{
   [req.query.score,req.query.testId,req.query.exam,req.query.course],(err,data)=>{
     if(err){
       console.log(err)
-      res.render("ress",{title:["添加补考","添加补考","补考信息","添加失败"]})}else{
-      res.render("ress",{title:["添加补考","添加补考","补考信息","添加成功"]})
+      res.render("ress",{title:["添加补考","添加补考","补考信息","添加失败"],username:req.session.username})}else{
+      res.render("ress",{title:["添加补考","添加补考","补考信息","添加成功"],username:req.session.username})
     }
   })
   }else{
