@@ -12,8 +12,8 @@ connection.connect()
 router.get('/', function(req, res, next) {
   connection.query("INSERT into exam(exam,examtime)VALUES(?,?)",[req.query.classname,req.query.classtime],(err,data)=>{
     if(err){
-      res.render("ress",{title:["创建考试","创建考试","考试信息","创建失败"]})}else{
-      res.render("ress",{title:["创建考试","创建考试","考试信息","创建成功"]})
+      res.render("ress",{title:["创建考试","创建考试","考试信息","创建失败"],username:req.session.username})}else{
+      res.render("ress",{title:["创建考试","创建考试","考试信息","创建成功"],username:req.session.username})
     }
   })
 });
