@@ -2,9 +2,10 @@
 var express = require('express');
 var router = express.Router();
 var mysql=require("mysql")
-var multer = require('multer');
+var path = require('path');
 var fs = require('fs');
-var upload = multer({ dest: 'excel/' });
+var formidable=require("formidable")
+
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -19,9 +20,7 @@ var mysqlword=
 "on student.testId=score.testId INNER JOIN class on class.className=student.class INNER JOIN layer "+
 "on layer.grade=class.grade";
 /* GET home page. */
-router.post('/upload', upload.single('1'), function(req, res, next){
-  console.log(req.files);
-});
+
 router.get('/', function(req, res, next) {
   res.render('login');
 });
@@ -235,5 +234,26 @@ router.post("/login",(req,res)=>{
       res.redirect("form")}else{res.end("失败")}
   })
 })
+router.post('/upload', function(req, res) {
 
+  var form = new formidable.IncomingForm();   //创建上传表单
+      form.encoding = 'utf-8';        //设置编辑
+      form.uploadDir = './excel/';     //设置上传目录
+      form.keepExtensions = true;     //保留后缀
+      form.maxFieldsSize = 2 * 1024 * 1024;   //文件大小
+
+    form.parse(req, function(err, fields, files) {
+
+        if (err) {
+          console.log(err);
+          
+          return;        
+        }  
+        var oldpath = path.normalize(files.file.path)
+        var newPath = "./excel/"+files.file.name
+
+        console.log(newPath);
+        fs.renameSync(oldpath,newPath);  //重命名
+    });      
+});
 module.exports = router;
