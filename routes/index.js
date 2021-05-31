@@ -1,4 +1,3 @@
-
 var express = require('express');
 var router = express.Router();
 var mysql=require("mysql")
@@ -24,6 +23,59 @@ var mysqlword=
 router.get('/', function(req, res, next) {
   res.render('login');
 });
+router.post("/users/reback",(req,res)=>{
+
+  connection.query("select email from user where username=?",[req.body.username],(err,data)=>{
+
+    if(err){console.log(err);res.json({result:"错误"})}else if(data.length<1){
+      res.json({result:"用户名不存在"})
+    }else{
+      var ma=Math.floor(Math.random() * 10000) + 1;
+      req.session.user=req.body.username
+      req.session.ma=ma
+      var transporter = nodemailer.createTransport({
+        // host: 'smtp.ethereal.email',
+        service: 'qq', // 使用了内置传输发送邮件 查看支持列表：https://nodemailer.com/smtp/well-known/
+        port: 465, // SMTP 端口
+        secureConnection: true, // 使用了 SSL
+        auth: {
+          user: '1754332801@qq.com',
+          // 这里密码不是qq密码，是你设置的smtp授权码
+          pass: 'kwgmbzjmwqkufacg',
+        }
+      });
+      let mailOptions = {
+        from: '"lll"<1754332801@qq.com>', // sender address
+        to: data[0].email, // list of receivers
+        subject: '验证码', // Subject line
+        // 发送text或者html格式
+        // text: 'Hello world?', // plain text body
+        html: '<h1>'+ma+'</h1>' // html body
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        // Message sent: <04ec7731-cc68-1ef6-303c-61b0f796b78f@qq.com>
+      });
+      res.json({result:"发送成功"})
+    }
+  })
+})
+router.post("/users/remake",(req,res)=>{
+  console.log(1);
+  if(req.body.ma==req.session.ma&&req.body.username==req.session.user){
+    connection.query("update user set password=? where username=?",[req.body.password,req.body.username],(err,data)=>{
+      if(err){res.json({result:"重置失败"})}else{res.json({result:"重置成功"})}
+    })
+  }else{res.json({result:"验证码错误"})}
+})
+router.all("/*",(req,res,next)=>{
+  if(req.session.username){next()}else{
+    res.redirect("/")
+  }
+})
 router.post("/login",(req,res)=>{
   connection.query("select * from user where username=? and password=?",[req.body.username,req.body.password],(err,data)=>{
     if(data.length>0){
@@ -32,11 +84,10 @@ router.post("/login",(req,res)=>{
       res.redirect("form")}else{res.end("失败")}
   })
 })
-router.all("/*",(req,res,next)=>{
-  if(req.session.username){next()}else{
-    res.redirect("/")
-  }
+router.get("/reback",(req,res)=>{
+  res.render("reback")
 })
+
 router.get('/form_advanced', function(req, res, next) {
 
     connection.query("SELECT className from class",function(err,data){
@@ -102,6 +153,17 @@ router.get('/tables', function(req, res, next) {
   
   
 });
+router.get('/update', function(req, res, next) {
+
+  connection.query("SELECT * from score",function(err,data){
+    if(err){console.log(err)}else{
+      
+      res.render('update',{data:data,username:req.session.username})
+    }
+  })
+
+
+});
 router.get("/student",function(req,res,next){
 
     connection.query("INSERT into student(sname,studentId,sex,class,testId)VALUES(?,?,?,?,?)",
@@ -127,6 +189,7 @@ router.post("/user",(req,res,next)=>{
   
   
 })
+
 router.get("/layer",(req,res,next)=>{
 
     connection.query("INSERT into layer(grade)VALUES(?)",
@@ -182,15 +245,48 @@ router.post("/add",(req,res)=>{
 for(var i=0;i<p.length;i++){
   connection.query("INSERT into score(student,exam,course,usualscore,testscore,totalscore,testId)VALUES(?,?,?,?,?,?,?)",
   [p[i],req.body[p[i]+"?"+v[i]],req.body[p[i]+"1"],req.body[p[i]+"2"],req.body[p[i]+"3"],req.body[p[i]+"4"],v[i]],(err,data)=>{
+    console.log(i);
    if(err){e=true}
   })
 }
 if(e){res.render("ress",{title:["添加成绩","添加成绩","成绩信息","添加失败"],username:req.session.username})}else{
   res.render("ress",{title:["添加成绩","添加成绩","成绩信息","添加成功"],username:req.session.username})
+} 
+})
+router.post("/update",(req,res)=>{
+  var totalscore;
+  for(o in req.body){
+    if(o=="totalscore[]"){
+      totalscore=req.body[o]
+    }
+  }
+var usualscore=req.body["usualscore[]"]
+console.log(1);
+var testscore=req.body["testscore[]"]
+
+
+var testId=req.body["testId[]"]
+console.log(3);
+
+
+console.log(totalscore);
+var exam=req.body["exam[]"]
+
+var course=req.body["course[]"]
+console.log(6);
+var e=false;
+
+for(var i=0;i<usualscore.length;i++){
+
+connection.query("update score set usualscore=?,testscore=?,totalscore=? where testId=? and exam=? and course=?",
+[usualscore[i],testscore[i],totalscore[i],testId[i],exam[i],course[i]],(err,data)=>{
+ if(err){e=true}
+
+})
 }
-  
-  
-  
+if(e){res.json({result:"修改失败"})}else{
+  res.json({result:"修改成功"})
+} 
 })
 router.get("/makeup",(req,res)=>{
  

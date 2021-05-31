@@ -1,12 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var mysql=require("mysql")
+var nodemailer=require("nodemailer")
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
   password : '123456',
   database : 'score'
 });
+
 connection.connect()
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -17,7 +19,6 @@ router.get('/', function(req, res, next) {
     }
   })
 });
-
 
 
 module.exports = router;
